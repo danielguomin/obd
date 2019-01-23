@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,6 +12,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.mapbar.adas.anno.PageSetting;
 import com.mapbar.adas.anno.ViewInject;
 import com.mapbar.adas.utils.AlarmManager;
@@ -53,7 +55,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @PageSetting(contentViewId = R.layout.collect_two_layout, toHistory = false)
-public class CollectTwoPage extends AppBasePage implements LocationListener, BleCallBackListener, View.OnClickListener {
+public class CollectTwoPage extends AppBasePage implements AMapLocationListener, BleCallBackListener, View.OnClickListener {
 
     @ViewInject(R.id.title)
     private TextView title;
@@ -89,6 +91,10 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
 
     private boolean isCollect;
 
+    public AMapLocationClient mlocationClient;
+
+    public AMapLocationClientOption mLocationOption = null;
+
     @Override
     public void onResume() {
         super.onResume();
@@ -103,7 +109,23 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
                 // TODO: Consider calling
                 return;
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000l, 0, this);
+            mlocationClient = new AMapLocationClient(GlobalUtil.getContext());
+//初始化定位参数
+            mLocationOption = new AMapLocationClientOption();
+//设置定位监听
+            mlocationClient.setLocationListener(this);
+//设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+//设置定位间隔,单位毫秒,默认为2000ms
+            mLocationOption.setInterval(1000);
+//设置定位参数
+            mlocationClient.setLocationOption(mLocationOption);
+// 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+// 注意设置合适的定位时间的间隔（最小间隔支持为1000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+// 在定位结束后，在合适的生命周期调用onDestroy()方法
+// 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+//启动定位
+            mlocationClient.startLocation();
             GlobalUtil.getHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -146,7 +168,7 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
     @Override
     public void onDestroy() {
         isCollect = false;
-        locationManager.removeUpdates(this);
+        mlocationClient.stopLocation();
         if (null != heartTimer) {
             heartTimer.cancel();
             heartTimer = null;
@@ -155,10 +177,10 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        if ("gps".equals(location.getProvider())) {
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if ("gps".equals(aMapLocation.getProvider())) {
             lastLocationTime = System.currentTimeMillis();
-            currentSpeed = (int) (location.getSpeed() * 3.6);
+            currentSpeed = (int) (aMapLocation.getSpeed() * 3.6);
             maxSpeed = currentSpeed > maxSpeed ? currentSpeed : maxSpeed;
             if (!startCollect && currentSpeed > 15) {
                 startCollect = true;
@@ -168,8 +190,8 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
             sb = new StringBuilder();
             sb.append(lastLocationTime).append("#")
                     .append(currentSpeed).append("#")
-                    .append(location.getLongitude()).append("#")
-                    .append(location.getLatitude()).append("#");
+                    .append(aMapLocation.getLongitude()).append("#")
+                    .append(aMapLocation.getLatitude()).append("#");
             locationList.add(sb.toString());
 
             if (!startCollect && startTime != 0 && System.currentTimeMillis() - startTime > 40 * 1000) {
@@ -179,7 +201,7 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
                 return;
             }
 
-            Log.d("location.getBearing() " + location.getBearing() + "     currentSpeed  " + currentSpeed);
+            Log.d("location.getBearing() " + aMapLocation.getBearing() + "     currentSpeed  " + currentSpeed);
 
             if (startCollect) {
                 if (currentSpeed > 10) {
@@ -187,8 +209,8 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
                         bears.pollFirst();
                         bearsTime.pollFirst();
                     }
-                    bears.addLast(location.getBearing());
-                    bearsTime.addLast(location.getTime());
+                    bears.addLast(aMapLocation.getBearing());
+                    bearsTime.addLast(aMapLocation.getTime());
                 }
                 if (!hasTrun) {
                     if (hasTurn()) {
@@ -224,21 +246,6 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    @Override
     public void onEvent(int event, Object data) {
         switch (event) {
             case OBDEvent.COLLECT_DATA:
@@ -264,7 +271,7 @@ public class CollectTwoPage extends AppBasePage implements LocationListener, Ble
     }
 
     private void stopCollect() {
-        locationManager.removeUpdates(this);
+        mlocationClient.stopLocation();
         BlueManager.getInstance().send(ProtocolUtils.stopCollect());
         if (null != heartTimer) {
             heartTimer.cancel();

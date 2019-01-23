@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,6 +14,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.mapbar.adas.anno.PageSetting;
 import com.mapbar.adas.anno.ViewInject;
 import com.mapbar.adas.utils.AlarmManager;
@@ -44,7 +46,7 @@ import okhttp3.Response;
 
 
 @PageSetting(contentViewId = R.layout.collect_layout)
-public class CollectPage extends AppBasePage implements View.OnClickListener, BleCallBackListener, LocationListener {
+public class CollectPage extends AppBasePage implements View.OnClickListener, BleCallBackListener, AMapLocationListener {
 
     @ViewInject(R.id.title)
     private TextView title;
@@ -56,6 +58,11 @@ public class CollectPage extends AppBasePage implements View.OnClickListener, Bl
     private View statusV;
     @ViewInject(R.id.content)
     private TextView contentTV;
+
+    public AMapLocationClient mlocationClient;
+
+    public AMapLocationClientOption mLocationOption = null;
+
 
     private int currentSpeed;
 
@@ -97,7 +104,24 @@ public class CollectPage extends AppBasePage implements View.OnClickListener, Bl
                 // TODO: Consider calling
                 return;
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000l, 0, this);
+            mlocationClient = new AMapLocationClient(GlobalUtil.getContext());
+//初始化定位参数
+            mLocationOption = new AMapLocationClientOption();
+//设置定位监听
+            mlocationClient.setLocationListener(this);
+//设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+//设置定位间隔,单位毫秒,默认为2000ms
+            mLocationOption.setInterval(1000);
+//设置定位参数
+            mlocationClient.setLocationOption(mLocationOption);
+// 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+// 注意设置合适的定位时间的间隔（最小间隔支持为1000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+// 在定位结束后，在合适的生命周期调用onDestroy()方法
+// 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+//启动定位
+            mlocationClient.startLocation();
+//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000l, 0, this);
         }
     }
 
@@ -117,7 +141,7 @@ public class CollectPage extends AppBasePage implements View.OnClickListener, Bl
     @Override
     public void onDestroy() {
         isStudy = false;
-        locationManager.removeUpdates(this);
+        mlocationClient.stopLocation();
         super.onDestroy();
     }
 
@@ -189,7 +213,7 @@ public class CollectPage extends AppBasePage implements View.OnClickListener, Bl
     public void onEvent(int event, Object data) {
         switch (event) {
             case OBDEvent.ADJUST_SUCCESS:
-                locationManager.removeUpdates(this);
+                mlocationClient.stopLocation();
                 CollectFinish collectFinish = new CollectFinish();
                 Bundle bundle = new Bundle();
                 bundle.putBoolean("success", true);
@@ -200,34 +224,21 @@ public class CollectPage extends AppBasePage implements View.OnClickListener, Bl
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        if ("gps".equals(location.getProvider())) {
-            currentSpeed = (int) (location.getSpeed() * 3.6);
-            if (currentSpeed < 50) {
-                adjustSpeed.addLast(currentSpeed);
-                if (adjustSpeed.size() >= 40) {
-                    Log.d("校准即将完成 play");
-                    AlarmManager.getInstance().play(R.raw.adjust_last);
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if (aMapLocation.getErrorCode() == 0) {
+            if ("gps".equals(aMapLocation.getProvider())) {
+                currentSpeed = (int) (aMapLocation.getSpeed() * 3.6);
+                if (currentSpeed < 50) {
+                    adjustSpeed.addLast(currentSpeed);
+                    if (adjustSpeed.size() >= 40) {
+                        Log.d("校准即将完成 play");
+                        AlarmManager.getInstance().play(R.raw.adjust_last);
+                        adjustSpeed.clear();
+                    }
+                } else {
                     adjustSpeed.clear();
                 }
-            } else {
-                adjustSpeed.clear();
             }
         }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 }
