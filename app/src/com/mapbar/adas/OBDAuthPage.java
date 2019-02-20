@@ -146,8 +146,8 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
                 uploadLog();
             case OBDEvent.NO_PARAM: // 无参数
                 obdStatusInfo = (OBDStatusInfo) data;
-                checkSupportTire();
-//                checkOBDVersion();
+//                checkSupportTire();
+                checkOBDVersion();
                 break;
             case OBDEvent.PARAM_UPDATE_SUCCESS:
                 obdStatusInfo = (OBDStatusInfo) data;
@@ -247,7 +247,7 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
                     if ("000".equals(result.optString("status"))) {
                         String state = result.optString("state");
                         if ("1".equals(state)) {
-                            CollectPage collectPage = new CollectPage();
+                            CollectReadyPage collectPage = new CollectReadyPage();
                             Bundle bundle = new Bundle();
                             bundle.putString("sn", obdStatusInfo.getSn());
                             collectPage.setDate(bundle);
@@ -761,7 +761,7 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
                                 case 2:
                                 case 3:
                                 case 6:
-                                    CollectPage collectPage = new CollectPage();
+                                    CollectReadyPage collectPage = new CollectReadyPage();
                                     Bundle bundle = new Bundle();
                                     bundle.putString("sn", obdStatusInfo.getSn());
                                     collectPage.setDate(bundle);

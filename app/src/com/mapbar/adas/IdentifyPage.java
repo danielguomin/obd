@@ -113,7 +113,34 @@ public class IdentifyPage extends AppBasePage implements View.OnClickListener {
     }
 
     private void getMSN() {
-        String phone = getDate().getString("phone");
+        time = 60;
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                GlobalUtil.getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (time <= 0 && timer != null) {
+                            timer.cancel();
+                            timer = null;
+                            timerTask.cancel();
+                            timerTask = null;
+                            retryTV.setText("重新发送");
+                            retryTV.setEnabled(true);
+                            retryTV.setOnClickListener(IdentifyPage.this);
+                        } else {
+                            retryTV.setText("(" + time + "s)后重发");
+                        }
+                        time--;
+                    }
+                });
+            }
+        };
+        timer = new Timer();
+        timer.schedule(timerTask, 0, 1000);
+        if (getDate() != null) {
+            phone.setText(getDate().getString("phone"));
+        }
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("phone", phone);

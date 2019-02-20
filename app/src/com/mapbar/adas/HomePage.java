@@ -17,8 +17,6 @@ import com.mapbar.hamster.OBDStatusInfo;
 import com.mapbar.hamster.core.ProtocolUtils;
 import com.miyuan.obd.R;
 
-import static com.mapbar.adas.preferences.SettingPreferencesConfig.TIRE_STATUS;
-
 @PageSetting(contentViewId = R.layout.home_layout, flag = BasePage.FLAG_SINGLE_TASK)
 public class HomePage extends AppBasePage implements View.OnClickListener, BleCallBackListener {
     @ViewInject(R.id.back)
@@ -67,7 +65,8 @@ public class HomePage extends AppBasePage implements View.OnClickListener, BleCa
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.trie:
-                if (null != obdStatusInfo && TIRE_STATUS.get() != 2) {
+
+                if (null != obdStatusInfo && !obdStatusInfo.getpVersion().startsWith("0000")) {
                     MainPage mainPage = new MainPage();
                     Bundle mainBundle = new Bundle();
                     mainBundle.putSerializable("obdStatusInfo", obdStatusInfo);

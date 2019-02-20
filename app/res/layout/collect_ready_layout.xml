@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <include layout="@layout/tittle_layout" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/common_margin_lr"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="@dimen/common_margin_lr"
+        android:gravity="left"
+        android:lineSpacingExtra="4dp"
+        android:text="需要校准之后才可以正常使用胎压功能！否则会误报或者漏报！"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/text_size" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="80dp"
+        android:gravity="left"
+        android:lineSpacingExtra="4dp"
+        android:text="正在深度校准中，请不要关闭手机APP"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/text_size" />
+
+
+    <TextView
+        android:id="@+id/confirm"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="@dimen/common_margin_lr"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="@dimen/common_margin_lr"
+        android:background="@drawable/btn_bg"
+        android:gravity="center"
+        android:text="开始校准"
+        android:textColor="#ffffffff"
+        android:textSize="18sp" />
+
+</LinearLayout>
