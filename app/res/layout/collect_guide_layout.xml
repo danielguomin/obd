@@ -13,17 +13,17 @@
         android:layout_marginLeft="@dimen/common_margin_lr"
         android:layout_marginRight="@dimen/common_margin_lr"
         android:layout_marginTop="5dp"
-        android:text="首次使用必须深度校准，否则会误报或者漏报！"
+        android:text="请严格按照以下顺序，完成胎压校准！否则会误报！"
         android:textColor="@color/text_color"
         android:textSize="@dimen/text_size" />
 
     <TextView
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/common_margin_lr"
         android:layout_marginRight="@dimen/common_margin_lr"
         android:layout_marginTop="40dp"
-        android:text="第一步：请停车拉手刹！\n自动挡挂P档、并拉手刹；手动挡挂空挡、并拉手刹\n\n第二步：请将车辆打火！\n请将车辆打火！！"
         android:textColor="@color/text_color"
         android:textSize="@dimen/text_size" />
 

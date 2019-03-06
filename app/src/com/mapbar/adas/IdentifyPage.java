@@ -53,6 +53,10 @@ public class IdentifyPage extends AppBasePage implements View.OnClickListener {
     private TimerTask timerTask;
     private int time = 60;
 
+    private Timer timer1;
+    private TimerTask timerTask1;
+    private int time1 = 60;
+
     private CustomDialog dialog;
 
 
@@ -113,37 +117,34 @@ public class IdentifyPage extends AppBasePage implements View.OnClickListener {
     }
 
     private void getMSN() {
-        time = 60;
-        timerTask = new TimerTask() {
+        time1 = 60;
+        timerTask1 = new TimerTask() {
             @Override
             public void run() {
                 GlobalUtil.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        if (time <= 0 && timer != null) {
-                            timer.cancel();
-                            timer = null;
-                            timerTask.cancel();
-                            timerTask = null;
+                        if (time1 <= 0 && timer1 != null) {
+                            timer1.cancel();
+                            timer1 = null;
+                            timerTask1.cancel();
+                            timerTask1 = null;
                             retryTV.setText("重新发送");
                             retryTV.setEnabled(true);
                             retryTV.setOnClickListener(IdentifyPage.this);
                         } else {
-                            retryTV.setText("(" + time + "s)后重发");
+                            retryTV.setText("(" + time1 + "s)后重发");
                         }
-                        time--;
+                        time1--;
                     }
                 });
             }
         };
-        timer = new Timer();
-        timer.schedule(timerTask, 0, 1000);
-        if (getDate() != null) {
-            phone.setText(getDate().getString("phone"));
-        }
+        timer1 = new Timer();
+        timer1.schedule(timerTask1, 0, 1000);
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("phone", phone);
+            jsonObject.put("phone", phone.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

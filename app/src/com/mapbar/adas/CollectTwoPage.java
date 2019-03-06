@@ -285,7 +285,7 @@ public class CollectTwoPage extends AppBasePage implements AMapLocationListener,
     private void updateCollectStauts() {
         boolean matching = getDate().getBoolean("matching");
         if (matching) {
-            CollectReadyPage collectPage = new CollectReadyPage();
+            CollectPage collectPage = new CollectPage();
             Bundle bundle = new Bundle();
             bundle.putString("sn", getDate().getString("sn"));
             collectPage.setDate(bundle);

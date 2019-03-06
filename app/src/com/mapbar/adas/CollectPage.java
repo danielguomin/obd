@@ -230,7 +230,7 @@ public class CollectPage extends AppBasePage implements View.OnClickListener, Bl
                 currentSpeed = (int) (aMapLocation.getSpeed() * 3.6);
                 if (currentSpeed < 50) {
                     adjustSpeed.addLast(currentSpeed);
-                    if (adjustSpeed.size() >= 40) {
+                    if (adjustSpeed.size() >= 70) {
                         Log.d("校准即将完成 play");
                         AlarmManager.getInstance().play(R.raw.adjust_last);
                         adjustSpeed.clear();

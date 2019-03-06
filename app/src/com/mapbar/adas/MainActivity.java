@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements BleCallBackListen
                 return true;
             }
         });
-        splashView.setBackgroundResource(R.drawable.splash);
         rootViewGroup.addView(splashView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         setContentView(rootViewGroup, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements BleCallBackListen
     protected void onPause() {
         super.onPause();
         if (null != mWakeLock) {
-            mWakeLock.release();
+//            mWakeLock.release();
         }
     }
 

@@ -38,11 +38,11 @@ public class InstallationGuidePage extends AppBasePage implements View.OnClickLi
     public void onResume() {
         super.onResume();
         MainActivity.getInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        title.setText("安装引导一");
+        title.setText("安装引导");
         reportV.setVisibility(View.GONE);
         back.setVisibility(View.GONE);
-        firstTV.setText(Html.fromHtml("第一步：<font color='#009488'>请停车拉手刹!</font><br><font color='#4A4A4A'>自动挡挂P档、并拉手刹；手动挡挂空挡、并拉手刹。</font><br><br>"));
-        secondTV.setText(Html.fromHtml("第二步：<font color='#009488'>请将车辆打火!</font><br><font color='#4A4A4A'>请确保车辆已打火</font><br><br>请完成以上操作后，再点击确认按钮！<br>否则会导致安装失败！"));
+        firstTV.setText(Html.fromHtml("<font color='#009488'>请您准备好以下工具:<br><br>1、手机</font><br><font color='#4A4A4A'>注册收取验证码.</font><br><br>"));
+        secondTV.setText(Html.fromHtml("<font color='#009488'>2、授权码</font><br><font color='#4A4A4A'>HUD产品在产品背面,OBD系列产品在包装上.</font>"));
         if (!ishow) {
             confirmV.setEnabled(ishow);
             ishow = true;
@@ -58,11 +58,11 @@ public class InstallationGuidePage extends AppBasePage implements View.OnClickLi
                                 timerTask.cancel();
                                 timerTask = null;
                                 timeOut = true;
-                                confirmV.setText("确认已拉手刹、并打火");
+                                confirmV.setText("我已经准备好了");
                                 confirmV.setEnabled(true);
                                 confirmV.setOnClickListener(InstallationGuidePage.this);
                             } else {
-                                confirmV.setText("确认已拉手刹、并打火(" + time + "s)");
+                                confirmV.setText("我已经准备好了(" + time + "s)");
                             }
                             time--;
                         }
@@ -96,7 +96,7 @@ public class InstallationGuidePage extends AppBasePage implements View.OnClickLi
                 PageManager.back();
                 break;
             case R.id.confirm:
-                InstallationGuideTwoPage authPage = new InstallationGuideTwoPage();
+                AuthPage authPage = new AuthPage();
                 Bundle bundle = new Bundle();
                 bundle.putString("boxId", getDate().getString("boxId"));
                 authPage.setDate(bundle);

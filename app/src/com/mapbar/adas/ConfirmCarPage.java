@@ -82,6 +82,8 @@ public class ConfirmCarPage extends AppBasePage implements View.OnClickListener 
                     bundle.putString("carName", getDate().get("carName").toString());
                     page.setDate(bundle);
                     PageManager.go(page);
+                } else {
+                    title.setText("再次确认");
                 }
                 times++;
                 break;

@@ -206,9 +206,9 @@ public class ProtocolCheckFailPage extends AppBasePage implements BleCallBackLis
                     if ("000".equals(result.optString("status"))) {
                         String state = result.optString("state");
                         if ("1".equals(state)) {
-                            CollectReadyPage collectPage = new CollectReadyPage();
+                            CollectPage collectPage = new CollectPage();
                             Bundle bundle = new Bundle();
-                            bundle.putString("sn", obdStatusInfo.getSn());
+                            bundle.putString("sn", getDate().getString("sn"));
                             collectPage.setDate(bundle);
                             PageManager.go(collectPage);
                         } else {

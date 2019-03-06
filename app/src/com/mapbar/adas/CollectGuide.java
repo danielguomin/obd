@@ -2,6 +2,7 @@ package com.mapbar.adas;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,6 +22,8 @@ public class CollectGuide extends AppBasePage implements View.OnClickListener {
     private TextView title;
     @ViewInject(R.id.back)
     private View back;
+    @ViewInject(R.id.content)
+    private TextView contentTV;
     @ViewInject(R.id.report)
     private View reportV;
     @ViewInject(R.id.confirm)
@@ -36,9 +39,9 @@ public class CollectGuide extends AppBasePage implements View.OnClickListener {
         super.onResume();
         MainActivity.getInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         title.setText("深度校准准备");
+        contentTV.setText(Html.fromHtml("<font color='#4A4A4A'>第1步、检查轮胎</font><font color='#009488'>确保胎压正常</font><font color='#4A4A4A'>建议使用胎压计</font><br><br><font color='#4A4A4A'>第2步、</font><font color='#009488'>将车辆打火</font><br><br><font color='#4A4A4A'>第3步、</font><font color='#009488'>请停车拉手刹！</font><font color='#4A4A4A'>此步非常重要</font><br><br><br><br><font color='#009488'>请严格操作！</font><br><font color='#009488'>否则会导致安装失败！</font>"));
         back.setVisibility(View.GONE);
         reportV.setVisibility(View.GONE);
-        back.setVisibility(View.GONE);
         if (!ishow) {
             confirmV.setEnabled(ishow);
             ishow = true;

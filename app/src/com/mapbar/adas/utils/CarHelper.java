@@ -66,7 +66,7 @@ public class CarHelper {
             contact.setPinyinName(pinyinName);  // pinyinName
 
             String sortLetters = setupSortLetters(contact.getName());
-            contact.setSortLetters(sortLetters); // sortLetters
+            contact.setSortLetters(contact.getLetter()); // sortLetters
 
         }
         Collections.sort(contacts);  // 排序

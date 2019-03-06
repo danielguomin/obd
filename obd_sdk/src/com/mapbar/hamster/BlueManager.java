@@ -127,7 +127,7 @@ public class BlueManager {
                 Log.d("device.getName()=    " + device.getName() + " device.getAddress()=" + device.getAddress());
                 Message msg = mHandler.obtainMessage();
                 msg.what = STOP_SCAN_AND_CONNECT;
-                msg.obj = device.getAddress();
+                msg.obj = device;
                 mHandler.sendMessage(msg);
             }
         }
@@ -621,7 +621,12 @@ public class BlueManager {
             Log.d("content  " + HexUtils.formatHexString(content));
             if (content[0] == 00) {
                 if (content[1] == 00) { // 通用错误
-
+                    Log.d("通用错误，重新发送！");
+                    if (mDataQueue != null) {
+                        mDataQueue.clear();
+                    }
+                    queue.add(currentProtocol);
+                    currentRepeat++;
                 } else if (content[1] == 01) { // 获取终端状态
                     OBDStatusInfo obdStatusInfo = new OBDStatusInfo();
                     obdStatusInfo.setBoxId(HexUtils.formatHexString(Arrays.copyOfRange(content, 12, 24)));
@@ -896,7 +901,7 @@ public class BlueManager {
             final Bundle bundle = msg.getData();
             switch (msg.what) {
                 case STOP_SCAN_AND_CONNECT:
-                    final String address = (String) msg.obj;
+                    final BluetoothDevice device = (BluetoothDevice) msg.obj;
                     mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -906,7 +911,12 @@ public class BlueManager {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            connect(address);
+//                            try {
+//                                ClsUtils.createBond(device.getClass(), device);
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+                            connect(device.getAddress());
                         }
                     });
                     break;

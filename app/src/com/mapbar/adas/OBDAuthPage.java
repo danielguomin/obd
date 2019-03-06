@@ -146,8 +146,8 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
                 uploadLog();
             case OBDEvent.NO_PARAM: // 无参数
                 obdStatusInfo = (OBDStatusInfo) data;
-//                checkSupportTire();
-                checkOBDVersion();
+                checkSupportTire();
+//                checkOBDVersion();
                 break;
             case OBDEvent.PARAM_UPDATE_SUCCESS:
                 obdStatusInfo = (OBDStatusInfo) data;
@@ -247,7 +247,7 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
                     if ("000".equals(result.optString("status"))) {
                         String state = result.optString("state");
                         if ("1".equals(state)) {
-                            CollectReadyPage collectPage = new CollectReadyPage();
+                            CollectPage collectPage = new CollectPage();
                             Bundle bundle = new Bundle();
                             bundle.putString("sn", obdStatusInfo.getSn());
                             collectPage.setDate(bundle);
@@ -474,6 +474,58 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
     /**
      * 通知服务器固件升级完成
      */
+    private void notifyUpdateSuccessNew() {
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("serialNumber", obdStatusInfo.getSn());
+            jsonObject.put("bVersion", obdStatusInfo.getbVersion());
+            jsonObject.put("pVersion", obdStatusInfo.getpVersion());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("not support notifyUpdateSuccess input " + jsonObject.toString());
+
+        RequestBody requestBody = new FormBody.Builder()
+                .add("params", GlobalUtil.encrypt(jsonObject.toString())).build();
+
+        Request request = new Request.Builder()
+                .url(URLUtils.FIRMWARE_UPDATE_SUCCESS)
+                .addHeader("content-type", "application/json;charset:utf-8")
+                .post(requestBody)
+                .build();
+        GlobalUtil.getOkHttpClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("not support notifyUpdateSuccess failure " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responese = response.body().string();
+                Log.d("not support notifyUpdateSuccess success " + responese);
+                try {
+                    final JSONObject result = new JSONObject(responese);
+                    if ("000".equals(result.optString("status"))) {
+                    } else {
+                        GlobalUtil.getHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(), result.optString("message"), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    Log.d("not support notifyUpdateSuccess failure " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
+     * 通知服务器固件升级完成
+     */
     private void notifyUpdateSuccess() {
         if (!needNotifyParamsSuccess) {
             return;
@@ -620,6 +672,7 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
                                     checkOBDVersion();
                                     break;
                                 case 2:
+                                    notifyUpdateSuccessNew(); // 不带胎压盒子需上传 P、BVersion
                                     PageManager.go(new HomePage());
                                     break;
                             }
@@ -761,7 +814,7 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
                                 case 2:
                                 case 3:
                                 case 6:
-                                    CollectReadyPage collectPage = new CollectReadyPage();
+                                    CollectPage collectPage = new CollectPage();
                                     Bundle bundle = new Bundle();
                                     bundle.putString("sn", obdStatusInfo.getSn());
                                     collectPage.setDate(bundle);

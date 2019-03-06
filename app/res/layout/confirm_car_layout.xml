@@ -21,7 +21,7 @@
         android:layout_marginLeft="@dimen/common_margin_lr"
         android:layout_marginTop="@dimen/common_margin_lr"
         android:lineSpacingExtra="4dp"
-        android:text="车型选择之后不可以修改! \n\n请您务必正确选择！\n 否则会导致胎压盒子无法使用！"
+        android:text="车型选择之后不可以修改! \n\n请您务必正确选择！\n否则会导致胎压盒子无法使用！"
         android:textColor="#FF009488"
         android:textSize="@dimen/text_size" />
 

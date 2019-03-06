@@ -48,6 +48,13 @@
 
         <service android:name="com.amap.api.location.APSService"></service>
 
+        <receiver android:name="com.mapbar.adas.utils.BluetoothConnectReceiver">
+            <intent-filter android:priority="1000">
+                <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
+                <action android:name="android.bluetooth.device.action.FOUND" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.miyuan.obd.fileprovider"
