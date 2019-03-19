@@ -28,7 +28,7 @@ public class StatusInfoPage extends AppBasePage implements View.OnClickListener 
         confirmV.setOnClickListener(this);
         title.setText("获取盒子状态!");
         confirmV.setText("关闭");
-        statusTV.setText("您的盒子可能为盗版盒子，请联系商家或厂家客服。");
+        statusTV.setText("盒子初始化失败，请重新连接，或联系商家更换产品！");
     }
 
     @Override

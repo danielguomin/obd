@@ -232,7 +232,9 @@ public class CollectPage extends AppBasePage implements View.OnClickListener, Bl
                     adjustSpeed.addLast(currentSpeed);
                     if (adjustSpeed.size() >= 70) {
                         Log.d("校准即将完成 play");
-                        AlarmManager.getInstance().play(R.raw.adjust_last);
+                        if (BackStackManager.getInstance().getCurrent() instanceof CollectPage) {
+                            AlarmManager.getInstance().play(R.raw.adjust_last);
+                        }
                         adjustSpeed.clear();
                     }
                 } else {

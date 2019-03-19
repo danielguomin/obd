@@ -364,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements BleCallBackListen
         });
     }
 
+
     private class CarRunnable implements Runnable {
 
         private byte[] data;

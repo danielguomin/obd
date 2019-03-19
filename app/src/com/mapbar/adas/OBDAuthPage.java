@@ -325,7 +325,6 @@ public class OBDAuthPage extends AppBasePage implements BleCallBackListener, Vie
                     }
                 });
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responese = response.body().string();

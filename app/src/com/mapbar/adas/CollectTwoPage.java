@@ -228,7 +228,9 @@ public class CollectTwoPage extends AppBasePage implements AMapLocationListener,
                         if (System.currentTimeMillis() - firstLocationTime >= 1000 * 40) {
                             // 提示请完成掉头操作
                             Log.d("提示请完成掉头操作");
-                            AlarmManager.getInstance().play(R.raw.trun);
+                            if (BackStackManager.getInstance().getCurrent() instanceof CollectTwoPage) {
+                                AlarmManager.getInstance().play(R.raw.trun);
+                            }
                             firstLocationTime = System.currentTimeMillis();
                         }
                     } else {
@@ -236,7 +238,9 @@ public class CollectTwoPage extends AppBasePage implements AMapLocationListener,
                             // 提示请完成加速
                             turnLocationTime = Long.MAX_VALUE;
                             Log.d("提示请完成加速");
-                            AlarmManager.getInstance().play(R.raw.speed_60);
+                            if (BackStackManager.getInstance().getCurrent() instanceof CollectTwoPage) {
+                                AlarmManager.getInstance().play(R.raw.speed_60);
+                            }
                             firstLocationTime = System.currentTimeMillis();
                         }
                     }

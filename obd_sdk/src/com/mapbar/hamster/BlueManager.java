@@ -92,7 +92,7 @@ public class BlueManager {
     private static final String NOTIFY_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     private static final int CONNECTED = 1; // 连接成功
     private static final int DISCONNECTED = 0; // 断开连接
-    private static final long COMMAND_TIMEOUT = 15000;
+    private static long COMMAND_TIMEOUT = 15000;
     private BluetoothGattCharacteristic writeCharacteristic;
     private BluetoothGattCharacteristic readCharacteristic;
     private BluetoothGatt mBluetoothGatt;
@@ -828,7 +828,7 @@ public class BlueManager {
                         pressureInfo.setStatus(2);
                     } else if (bytes[5] == 1) {
                         pressureInfo.setStatus(3);
-                    } else if (bytes[6] == 1) {
+                    } else if (bytes[4] == 1) {
                         pressureInfo.setStatus(4);
                     } else {
                         pressureInfo.setStatus(0);
@@ -1282,6 +1282,17 @@ public class BlueManager {
                     if (waitForCommand) {
                         try {
                             Log.d("TimeOutThread wait ");
+//                            if (null != currentProtocol && currentProtocol.length>3) {
+//                               /* if (currentProtocol[1] == 0x80 && currentProtocol[2] == 0x01) {
+//                                    COMMAND_TIMEOUT = 40000;
+//                                } else*/ if(currentProtocol[1] == 0x88 && currentProtocol[2] == 0x05) {
+//                                    COMMAND_TIMEOUT = 15000;
+//                                } else {
+//                                    COMMAND_TIMEOUT = 7000;
+//                                }
+//                            } else {
+//                                COMMAND_TIMEOUT = 7000;
+//                            }
                             TIMEOUTSYNC.wait(COMMAND_TIMEOUT);
                             if (needRewire) {
                                 Log.d("TimeOutThread needRewire ");
